@@ -71,10 +71,11 @@ contract Election{
             return (ids, optionsNames, votes);
         }
 
-        function removeTopic(uint _topicId) public validateTopic(_topicId){
+        function removeTopic(uint _topicId) public validateTopic(_topicId) returns(bool){
              require(topics[_topicId-1].isDeleted == false,"Topic is already deleted.");
              topics[_topicId-1].isDeleted = true;
-             emit TopicDeleted(_topicId);                              
+             emit TopicDeleted(_topicId);
+             return true;                              
         }
         
         function startVoting(uint _topicId) public validateTopic(_topicId) returns(bool){

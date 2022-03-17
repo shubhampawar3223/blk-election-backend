@@ -10,6 +10,11 @@ contract Election{
           uint votes;
        }   
 
+       struct VoterLog{
+           uint optionId;
+           address voter; 
+       }
+
        struct Topic {
            uint topicId;
            string topicName;
@@ -18,12 +23,12 @@ contract Election{
            uint totalVotes;
            bool isDeleted;
            mapping (uint=>Option) optionMapping; 
+           mapping (uint=>VoterLog[]) voterLogs;
        }  
         Topic[] public topics;    
         modifier onlyOwner{
-            if(owner== msg.sender){
+            require(owner== msg.sender ,"Only owner can create topic.");
               _;
-            }
         } 
 
         modifier validateTopic(uint _topicId){
@@ -108,6 +113,7 @@ contract Election{
             if(topics[_topicId-1].status == 1 ){
                 topics[_topicId-1].optionMapping[_optionId].votes++;
                 topics[_topicId-1].totalVotes++;
+                topics[_topicId-1].voterLogs[_topicId].push(VoterLog(_optionId,msg.sender));
                 emit Vote(_topicId, _optionId,true);
                 return true;
             }
@@ -116,4 +122,8 @@ contract Election{
             }
         }
 
+        function getVoterRecords(uint _topicId)public view returns(VoterLog[] memory){
+            VoterLog[] memory logs=topics[_topicId-1].voterLogs[_topicId];
+            return logs;
+        }
 }
